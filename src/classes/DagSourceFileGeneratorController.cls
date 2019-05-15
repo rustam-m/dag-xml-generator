@@ -24,7 +24,6 @@ public with sharing class DagSourceFileGeneratorController {
 
     public PageReference createTransactions() {
         try {
-
             String resValidation = dataValidation(numberOfTransactions, startDate);
             if (String.isNotBlank(resValidation)) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, resValidation));
@@ -32,24 +31,20 @@ public with sharing class DagSourceFileGeneratorController {
             }
 
             transactionList = new List<TransactionWrapper>();
-            System.debug(transactionList);
-            System.debug(this);
 
             Integer inc = 0;
             Decimal maxNumber = (startBalance / numberOfTransactions) + 1;
             for (Integer i = 0; i < numberOfTransactions; i++) {
                 transactionList.add(new TransactionWrapper(
-                    getDescription(),
-                    startDate.addDays(inc += step),
-                    startDate.addDays(inc + 1),
-                    Math.round(Math.random() * (maxNumber - 1) + 1),
-                    Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
-                    STATUS_POSTED
-                )
+                        getDescription(),
+                        startDate.addDays(inc += step),
+                        startDate.addDays(inc + 1),
+                        Math.round(Math.random() * (maxNumber - 1) + 1),
+                        Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
+                        STATUS_POSTED
+                    )
                 );
-
             }
-
             changeStatus();
         } catch (Exception e) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, String.valueOf(e)));
@@ -60,7 +55,7 @@ public with sharing class DagSourceFileGeneratorController {
 
     public void generateXML() {
         linkToFile = new DagXMLFileGenerator(transactionList, accountName, availableBalance, currentBalance).generateAndSave(transactionType);
-        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'XML file has created success!'));
+        ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.CONFIRM, 'XML file has been successfully created.'));
     }
 
     public void changeStatus() {
@@ -68,7 +63,6 @@ public with sharing class DagSourceFileGeneratorController {
         this.availableBalance = this.startBalance;
         this.currentBalance   = this.startBalance;
 
-        System.debug(transactionList);
         for (TransactionWrapper field : transactionList) {
             if (field.transStatus == STATUS_POSTED) {
                 this.availableBalance = this.availableBalance - field.amount;
@@ -78,7 +72,7 @@ public with sharing class DagSourceFileGeneratorController {
             }
 
             if (this.availableBalance < 0 || this.currentBalance < 0) {
-                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Available and Current balance should not be negative.'));
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Available and Current balance can not be less than zero.'));
             }
         }
     }
@@ -131,7 +125,7 @@ public with sharing class DagSourceFileGeneratorController {
 
     private String dataValidation(Integer numberTransaction, Date startDate) {
         if (numberTransaction >= 1000 || numberTransaction < 1) {
-            return 'The maximal Number of Transaction is 999 and minimal is 1';
+            return 'Number of transactions can be any number from 1 to 999';
         } else if (startDate > Date.today()) {
             return 'The due date can not be earlier then the issue date';
         }

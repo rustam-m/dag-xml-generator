@@ -3,7 +3,6 @@ public with sharing class DagXMLFileGenerator {
     private static String BANK_STUB        = 'Bank';
     private static String CREDIT_CARD_STUB = 'Credit Card';
 
-
     private List<TransactionWrapper> transactions;
     private  String  accountName;
     private  Decimal availableBalance;
@@ -23,7 +22,6 @@ public with sharing class DagXMLFileGenerator {
         } else if (CREDIT_CARD_STUB == type) {
             link = cardTemplate(type);
         }
-        System.debug(type);
         return link;
     }
 
@@ -38,24 +36,21 @@ public with sharing class DagXMLFileGenerator {
            insert createFile;
         }
         catch (Exception e) {
-            System.debug(e);
+
         }
 
         return '/' + createFile.Id;
     }
 
-
-
     private String bankTemplate(String type){
         List<String> bankTransactionList = new List<String>();
 
-        System.debug(transactions);
         for (TransactionWrapper items : this.transactions) {
 
             Datetime transDateTime = items.transDate;
             Datetime postDateTime  = items.postDate;
 
-                    String showPostDate = items.transStatus == 'posted'
+            String showPostDate = items.transStatus == 'posted'
                 ? '<postDate localFormat="yyyy-MM-dd">' + transDateTime.format('yyyy-MM-dd\'T\'hh:mm:ss') + '</postDate>'
                 : '';
 
@@ -70,7 +65,7 @@ public with sharing class DagXMLFileGenerator {
             );
         }
 
-//        Dag Checking Account
+        //Dag Checking Account
         String resXml = '<site>' +
             '<bankAccount nickName="Interest Checking-2345" acctType="checking" accountClassification="personal">'+
                 '<accountName>' + this.accountName  +'</accountName>'+
@@ -115,7 +110,7 @@ public with sharing class DagXMLFileGenerator {
                  '</transaction>'
             );
         }
-//        Dag Charge Card
+        //Dag Charge Card
         String resXml = '<site>' +
              '<cardAccount accountClassification="personal" acctType="charge">'+
                  '<accountName>' + this.accountName + '</accountName>'+
@@ -150,7 +145,5 @@ public with sharing class DagXMLFileGenerator {
 
         return createFile(resXml, type);
     }
-
-
 
 }

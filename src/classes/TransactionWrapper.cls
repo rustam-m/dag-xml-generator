@@ -7,7 +7,6 @@ public with sharing class TransactionWrapper {
     public String  transStatus           { get; set; }
     public Integer numberTransaction     { get; set; }
 
-//    public TransactionType transType     { get; set; }
     public enum TransactionType          { DEBIT, CREDIT }
 
     public String  transBaseType { get; set; }
@@ -30,6 +29,5 @@ public with sharing class TransactionWrapper {
     private String setTransType() {
         return XmlCreatorTestData.TRANSACTION_ATTRIBUTES.get(this.transBaseType).get(Math.round(Math.random() * 1));
     }
-
 
 }

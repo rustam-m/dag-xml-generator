@@ -11,7 +11,6 @@ public with sharing class XmlCreatorTestData {
         'Transfer'
     };
 
-
     public static final List<String> DESCRIPTION_CREDIT_CARD = new List<String> {
         'Audible audible.com NJ 1SZQH6HQ11T AUDIO BOOKS',
         'WWW.SHEIN.COM CALIFORNIA CA',
@@ -29,7 +28,6 @@ public with sharing class XmlCreatorTestData {
         'THE HOME DEPOT  6534 FT. WORTH TX'
     };
 
-
     public static final Integer DESCRIPTION_BANK_SIZE {
         get { return XmlCreatorTestData.DESCRIPTION_BANK.size(); }
         set;
@@ -40,14 +38,13 @@ public with sharing class XmlCreatorTestData {
         set;
     }
 
-
     public static final Map<String, List<String>> TRANSACTION_ATTRIBUTES = new Map<String, List<String>>{
-            'debit' => new List<String>{
-                    'debit', 'miscellaneousFee'
-            },
-            'credit' => new List<String>{
-                    'interestPayment', 'deposit'
-            }
+        'debit' => new List<String>{
+            'debit', 'miscellaneousFee'
+        },
+        'credit' => new List<String>{
+            'interestPayment', 'deposit'
+        }
     };
 
 }
