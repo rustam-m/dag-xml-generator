@@ -1,0 +1,135 @@
+<apex:page id="DagSourceFileGenerator" controller="DagSourceFileGeneratorController" sidebar="false" docType="html-5.0">
+    <apex:slds />
+    <apex:pageBlock mode="maindetail">
+        <div class="slds-grid">
+            <!--LEFT SIDEBAR-->
+            <div class="slds-col slds-size--1-of-2">
+                <apex:form id="rest">
+                    <apex:pageBlock title="Settings">
+                        <apex:pageBlockSection columns="1" collapsible="false" id="retest">
+
+                            <apex:selectList value="{!transactionType}"
+                                             multiselect="false"
+                                             size="1"
+                                             label="Type"
+                                             required="true">
+                                <apex:selectOptions value="{!items}"/>
+                            </apex:selectList>
+
+                            <apex:input value="{!startBalance}"         type="number" label="Start Balance"          required="true"/>
+                            <apex:input value="{!startDate}"            type="date"   label="Start Date"             required="true"/>
+                            <apex:input value="{!step}"                 type="number" label="Step"                   required="true"/>
+                            <apex:input value="{!numberOfTransactions}" type="number" label="Number of Transactions" required="true"/>
+                            <apex:input value="{!accountName}"          type="text"   label="Account Name"           required="true"/>
+
+                            <apex:commandButton value="Generate Transaction(s)"
+                                                reRender="rerenderRightColumn"
+                                                action="{!createTransactions}"
+                                                status="pageStatus" />
+                        </apex:pageBlockSection>
+
+                    </apex:pageBlock>
+                </apex:form>
+            </div>
+            <!--RIGHT SIDEBAR-->
+            <div class="slds-col slds-size--1-of-2">
+                <apex:form id="rerenderRightColumn">
+                    <apex:pageBlock title="Transactions List">
+
+                        <apex:actionStatus id="pageStatus">
+                            <apex:facet name="start">
+                                <apex:outputPanel >
+                                    <img src="/img/loading32.gif" width="32" height="32"/>
+                                    <apex:outputLabel value="Generation is in progress..."/>
+                                </apex:outputPanel>
+                            </apex:facet>
+                        </apex:actionStatus>
+                        <apex:pageMessages />
+
+                        <apex:pageBlockSection columns="1" collapsible="false" rendered="{!IF(transactionList == null, false, true)}">
+
+                            <!--BLOCK BALANCE-->
+                            <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}"> Link to file </apex:outputLink>
+
+                            <apex:commandButton value="Create XML file"
+                                                action="{!generateXML}"
+                                                reRender="rerenderRightColumn"
+                                                status="pageStatus"
+                                                disabled="{!OR(availableBalance < 0, currentBalance < 0)}"/>
+
+                            <apex:pageBlockSection columns="1" collapsible="false" id="balanceSection">
+                                <apex:outputText value="{!transactionType}"   label="Type of XML file"/>
+                                <apex:outputText value="${!startBalance}"     label="Start Balance"/>
+                                <apex:outputText value="${!availableBalance}" style="font-weight:bold; color: {!IF(availableBalance < 0, 'red', 'green')}" label="Available Balance"/>
+                                <apex:outputText value="${!currentBalance}"   style="font-weight:bold; color: {!IF(currentBalance < 0, 'red', 'green')}" label="Current Balance"/>
+                            </apex:pageBlockSection>
+
+
+
+                            <apex:repeat value="{!transactionList}" var="index">
+
+                                <apex:pageBlockSection title="Transaction {!index.numberTransaction}" columns="2" collapsible="false">
+                                    <!--LEFT COLUMN-->
+                                    <apex:pageBlockSection columns="1" collapsible="false">
+                                        <apex:input value="{!index.description}" type="text" label="Description"      required="true"/>
+                                        <apex:input value="{!index.transDate}"   type="date" label="Transaction Date" required="true"/>
+                                        <apex:input value="{!index.postDate}"    type="date" label="Post Date"        required="true"
+                                                    rendered="{!IF(index.transStatus == 'pending', false, true)}"/>
+                                    </apex:pageBlockSection>
+
+                                    <!--RIGHT COLUMN-->
+                                    <apex:pageBlockSection columns="1" collapsible="false" id="transactionSection">
+                                        <!--amount-->
+                                        <apex:input value="{!index.amount}" type="number" label="Amount" required="true">
+                                            <apex:actionSupport event="onchange" reRender="rerenderRightColumn" status="changeStatus" action="{!changeStatus}"/>
+                                        </apex:input>
+                                        <!--status-->
+                                        <apex:selectList value="{!index.transStatus}" multiselect="false" size="1" label="Status" required="true">
+                                            <apex:selectOptions value="{!status}"/>
+                                            <apex:actionSupport event="onchange" reRender="rerenderRightColumn" status="changeStatus"  action="{!changeStatus}"/>
+                                            <!--<apex:actionSupport event="onchange" reRender="transactionSection" status="changeStatus"/>-->
+                                        </apex:selectList>
+                                        <!--base type-->
+                                        <apex:selectList value="{!index.transBaseType}" multiselect="false" size="1" label="Base Type"   required="true">
+                                            <apex:selectOptions value="{!baseType}"/>
+                                            <apex:actionSupport event="onchange" reRender="transactionSection" status="changeStatus"/>
+                                        </apex:selectList>
+                                        <!--type-->
+                                        <apex:selectList value="{!index.transType}" multiselect="false" size="1" label="Type" required="true">
+                                            <apex:selectOptions value="{!IF(index.transBaseType == 'debit', typeDebit, typeCredit)}"/>
+                                        </apex:selectList>
+                                    </apex:pageBlockSection>
+
+                                </apex:pageBlockSection>
+
+                                <apex:pageBlockSection columns="1" collapsible="false">
+                                    <apex:actionStatus id="changeStatus">
+                                        <apex:facet name="start">
+                                            <apex:outputPanel >
+                                                <img src="/img/loading32.gif" width="25" height="25"/>
+                                                <apex:outputLabel value="Changing status..."/>
+                                            </apex:outputPanel>
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                </apex:pageBlockSection>
+
+                            </apex:repeat>
+
+                            <apex:pageBlockSection columns="1">
+                                <apex:commandButton value="Create XML file"
+                                                    action="{!generateXML}"
+                                                    reRender="rerenderRightColumn"
+                                                    status="pageStatus"
+                                                    disabled="{!OR(availableBalance < 0, currentBalance < 0)}" />
+
+                                <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}"> Link to file </apex:outputLink>
+                            </apex:pageBlockSection>
+                        </apex:pageBlockSection>
+
+                    </apex:pageBlock>
+                </apex:form>
+            </div>
+        </div>
+    </apex:pageBlock>
+
+</apex:page>
