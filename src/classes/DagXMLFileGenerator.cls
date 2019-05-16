@@ -1,7 +1,7 @@
 public with sharing class DagXMLFileGenerator {
 
     private static String BANK_STUB        = 'Bank';
-    private static String CREDIT_CARD_STUB = 'Credit Card';
+    private static String CREDIT_CARD_STUB = 'Credits';
 
     private List<TransactionWrapper> transactions;
     private  String  accountName;
@@ -26,20 +26,27 @@ public with sharing class DagXMLFileGenerator {
     }
 
     private String createFile(String data, String type){
-        ContentVersion createFile = new ContentVersion (
-            Title = 'Dag Side - '+ type,
-            PathOnClient = 'Dag Side - '+ type + '.xml',
-            VersionData = Blob.valueOf(data)
-        );
+        String typeFile = 'Dag Site - ' + type;
+        List<ContentVersion> xmlDoc = [SELECT Title FROM ContentVersion WHERE Title = :typeFile LIMIT 1];
+
+        if (xmlDoc.isEmpty()) {
+            xmlDoc.add(new ContentVersion (
+                Title          = typeFile,
+                PathOnClient   = typeFile + '.xml',
+                VersionData    = Blob.valueOf(data),
+                IsMajorVersion = false
+            ));
+        } else {
+            xmlDoc.get(0).VersionData = Blob.valueOf(data);
+        }
 
         try {
-           insert createFile;
-        }
-        catch (Exception e) {
+            upsert xmlDoc.get(0);
+        } catch (Exception e) {
 
         }
 
-        return '/' + createFile.Id;
+        return '/' + xmlDoc.get(0).Id;
     }
 
     private String bankTemplate(String type){
@@ -55,7 +62,7 @@ public with sharing class DagXMLFileGenerator {
                 : '';
 
             bankTransactionList.add(
-                 '<transaction baseType="'+ items.transBaseType +'" transactionStatus="' + items.transStatus + '" type="'+ items.transType +'">'+
+                 '<transaction baseType="'+ items.transBaseType +'" transactionStatus="' + items.transStatus + '" type="'+ items.transBaseType +'">'+
                     '<description>' + items.description + '</description>' +
                     '<transDate localFormat="yyyy-MM-dd">' + postDateTime.format('yyyy-MM-dd\'T\'hh:mm:ss') + '</transDate>'+
                     showPostDate +
@@ -101,7 +108,7 @@ public with sharing class DagXMLFileGenerator {
                     : '';
 
             cardTransactionList.add(
-                '<transaction transactionStatus="'+ items.transStatus +'" type="deposit">' +
+                '<transaction transactionStatus="'+ items.transStatus +'" baseType="'+ items.transBaseType +'">' +
                      '<description>' + items.description + '</description>' +
                      '<transactionId>' + Math.abs(Crypto.getRandomInteger()) + '</transactionId>' +
                      '<transDate localFormat="yyyy-MM-dd">' + postDateTime.format('yyyy-MM-dd\'T\'hh:mm:ss') + '</transDate>' +

@@ -24,6 +24,7 @@ public with sharing class DagSourceFileGeneratorController {
 
     public PageReference createTransactions() {
         try {
+
             String resValidation = dataValidation(numberOfTransactions, startDate);
             if (String.isNotBlank(resValidation)) {
                 ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, resValidation));
@@ -36,15 +37,17 @@ public with sharing class DagSourceFileGeneratorController {
             Decimal maxNumber = (startBalance / numberOfTransactions) + 1;
             for (Integer i = 0; i < numberOfTransactions; i++) {
                 transactionList.add(new TransactionWrapper(
-                        getDescription(),
-                        startDate.addDays(inc += step),
-                        startDate.addDays(inc + 1),
-                        Math.round(Math.random() * (maxNumber - 1) + 1),
-                        Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
-                        STATUS_POSTED
-                    )
+                    getDescription(),
+                    startDate.addDays(inc += step),
+                    startDate.addDays(inc + 1),
+                    Math.round(Math.random() * (maxNumber - 1) + 1),
+                    Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
+                    STATUS_POSTED
+                )
                 );
+
             }
+
             changeStatus();
         } catch (Exception e) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, String.valueOf(e)));
@@ -81,7 +84,7 @@ public with sharing class DagSourceFileGeneratorController {
         String description = '';
         if (transactionType == 'Bank') {
             description = XmlCreatorTestData.DESCRIPTION_BANK.get(Math.round(Math.random() * (XmlCreatorTestData.DESCRIPTION_BANK_SIZE - 1)));
-        } else if (transactionType == 'Credit Card') {
+        } else if (transactionType == 'Credits') {
             description = XmlCreatorTestData.DESCRIPTION_CREDIT_CARD.get(Math.round(Math.random() * (XmlCreatorTestData.DESCRIPTION_CREDIT_CARD_SIZE - 1)));
         }
         return description;
@@ -89,7 +92,7 @@ public with sharing class DagSourceFileGeneratorController {
 
     public List<SelectOption> getItems() {
         List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('Credit Card', 'Credit Card'));
+        options.add(new SelectOption('Credits', 'Credit Card'));
         options.add(new SelectOption('Bank', 'Bank'));
         return options;
     }
@@ -107,22 +110,7 @@ public with sharing class DagSourceFileGeneratorController {
         options.add(new SelectOption('posted',  'POSTED'));
         return options;
     }
-
-    public List<SelectOption> getTypeDebit() {
-        List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('debit', 'DEBIT'));
-        options.add(new SelectOption('miscellaneousFee',  'MISCELLANEOUS FEE'));
-        return options;
-    }
-
-    public List<SelectOption> getTypeCredit() {
-        List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('deposit', 'DEPOSIT'));
-        options.add(new SelectOption('interestPayment',  'INTEREST PAYMENT'));
-        return options;
-    }
-
-
+    
     private String dataValidation(Integer numberTransaction, Date startDate) {
         if (numberTransaction >= 1000 || numberTransaction < 1) {
             return 'Number of transactions can be any number from 1 to 999';
