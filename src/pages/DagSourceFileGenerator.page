@@ -68,9 +68,9 @@
 
                             <apex:pageBlockSection columns="1" collapsible="false" id="balanceSection">
                                 <apex:outputText value="{!transactionType}"   label="Type of XML file"/>
-                                <apex:outputText value="${!startBalance}"     label="Start Balance"/>
-                                <apex:outputText value="${!availableBalance}" style="font-weight:bold; color: {!IF(availableBalance < 0, 'red', 'green')}" label="Available Balance"/>
-                                <apex:outputText value="${!currentBalance}"   style="font-weight:bold; color: {!IF(currentBalance < 0, 'red', 'green')}" label="Current Balance"/>
+                                <apex:outputText value="{!startBalance}"     label="Start Balance"/>
+                                <apex:outputText value="{!availableBalance}" style="font-weight:bold; color: {!IF(availableBalance < 0, 'red', 'green')}" label="Available Balance"/>
+                                <apex:outputText value="{!currentBalance}"   style="font-weight:bold; color: {!IF(currentBalance < 0, 'red', 'green')}" label="Current Balance"/>
                             </apex:pageBlockSection>
 
 

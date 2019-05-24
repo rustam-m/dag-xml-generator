@@ -3,7 +3,8 @@
     <defaultLandingTab>XML_Generator</defaultLandingTab>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
-    <label>XML Generator</label>
+    <label>File Generator</label>
     <tabs>XML_Generator</tabs>
+    <tabs>OFX_Generator</tabs>
     <tabs>standard-File</tabs>
 </CustomApplication>

@@ -13,6 +13,7 @@
         <name>CustomApplication</name>
     </types>
     <types>
+        <members>OFX_Generator</members>
         <members>XML_Generator</members>
         <name>CustomTab</name>
     </types>

@@ -6,7 +6,7 @@ public with sharing class DagSourceFileGeneratorController {
     public String  accountName                       { get; set; }
     public Integer numberOfTransactions              { get; set; }
     public List<TransactionWrapper> transactionList  { get; set; }
-    public String linkToFile                         { get; set; }
+    public String  linkToFile                        { get; set; }
     public Decimal startBalance                      { get; set; }
     public Decimal availableBalance                  { get; set; }
     public Decimal currentBalance                    { get; set; }
@@ -87,6 +87,7 @@ public with sharing class DagSourceFileGeneratorController {
         } else if (transactionType == 'Credits') {
             description = XmlCreatorTestData.DESCRIPTION_CREDIT_CARD.get(Math.round(Math.random() * (XmlCreatorTestData.DESCRIPTION_CREDIT_CARD_SIZE - 1)));
         }
+
         return description;
     }
 

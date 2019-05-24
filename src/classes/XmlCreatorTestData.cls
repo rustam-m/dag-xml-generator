@@ -27,6 +27,28 @@ public with sharing class XmlCreatorTestData {
         'PAYPAL'
     };
 
+    public  static final List<String> DESCRIPTION_OFX =  new List<String> {
+        'NRM Ltd',
+        'Donald D',
+        'John Hancock',
+        'Tesco',
+        'ADIDAS',
+        'Columbia',
+        'Cinemax',
+        'Amazon',
+        'FeedEx',
+        'RHD Co',
+        'MAX XQ',
+        'PANERA BREAD',
+        'LA FITNESS CORP',
+        'PAYPAL'
+    };
+
+    public static final Integer DESCRIPTION_OFX_SIZE {
+        get { return XmlCreatorTestData.DESCRIPTION_OFX.size(); }
+        set;
+    }
+
     public static final Integer DESCRIPTION_BANK_SIZE {
         get { return XmlCreatorTestData.DESCRIPTION_BANK.size(); }
         set;

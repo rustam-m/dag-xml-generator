@@ -15,6 +15,10 @@ public with sharing class DagXMLFileGenerator {
         this.currentBalance   = cBalance;
     }
 
+    public DagXMLFileGenerator(List<TransactionWrapper> sourceTransactions) {
+        this.transactions = sourceTransactions;
+    }
+
     public String generateAndSave(String type) {
         String link = '';
         if (BANK_STUB == type) {
@@ -25,14 +29,14 @@ public with sharing class DagXMLFileGenerator {
         return link;
     }
 
-    private String createFile(String data, String type){
-        String typeFile = 'Dag Site - ' + type;
-        List<ContentVersion> xmlDoc = [SELECT Title FROM ContentVersion WHERE Title = :typeFile LIMIT 1];
+    private String createFile(String data, String type) {
+        String fileName = 'Dag Site - ' + type;
+        List<ContentVersion> xmlDoc = [SELECT Title FROM ContentVersion WHERE Title = :fileName LIMIT 1];
 
         if (xmlDoc.isEmpty()) {
             xmlDoc.add(new ContentVersion (
-                Title          = typeFile,
-                PathOnClient   = typeFile + '.xml',
+                Title          = fileName,
+                PathOnClient   = fileName + '.xml',
                 VersionData    = Blob.valueOf(data),
                 IsMajorVersion = false
             ));
@@ -152,5 +156,4 @@ public with sharing class DagXMLFileGenerator {
 
         return createFile(resXml, type);
     }
-
 }
