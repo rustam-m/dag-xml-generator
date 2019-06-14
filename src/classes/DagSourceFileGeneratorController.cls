@@ -1,25 +1,25 @@
 public with sharing class DagSourceFileGeneratorController {
 
-    public String  transactionType                   { get; set; }
-    public Date    startDate                         { get; set; }
-    public Integer step                              { get; set; }
-    public String  accountName                       { get; set; }
-    public Integer numberOfTransactions              { get; set; }
-    public List<TransactionWrapper> transactionList  { get; set; }
-    public String  linkToFile                        { get; set; }
-    public Decimal startBalance                      { get; set; }
-    public Decimal availableBalance                  { get; set; }
-    public Decimal currentBalance                    { get; set; }
+    public String transactionType { get; set; }
+    public Date startDate { get; set; }
+    public Integer step { get; set; }
+    public String accountName { get; set; }
+    public Integer numberOfTransactions { get; set; }
+    public List<TransactionWrapper> transactionList { get; set; }
+    public String linkToFile { get; set; }
+    public Decimal startBalance { get; set; }
+    public Decimal availableBalance { get; set; }
+    public Decimal currentBalance { get; set; }
 
     private static final String STATUS_POSTED = 'posted';
 
     //Constructor set default value;
     public DagSourceFileGeneratorController(){
         this.startDate = Date.today();
-        this.step      = 1;
+        this.step = 1;
         this.numberOfTransactions = 1;
         this.startBalance = 10000;
-        this.currentBalance   = this.startBalance;
+        this.currentBalance = this.startBalance;
     }
 
     public PageReference createTransactions() {
@@ -33,13 +33,13 @@ public with sharing class DagSourceFileGeneratorController {
 
             transactionList = new List<TransactionWrapper>();
 
-            Integer inc = 0;
+            Integer incrementForDate = 0;
             Decimal maxNumber = (startBalance / numberOfTransactions) + 1;
             for (Integer i = 0; i < numberOfTransactions; i++) {
                 transactionList.add(new TransactionWrapper(
                     getDescription(),
-                    startDate.addDays(inc += step),
-                    startDate.addDays(inc + 1),
+                    startDate.addDays(incrementForDate + step),
+                    startDate.addDays(incrementForDate + 1),
                     Math.round(Math.random() * (maxNumber - 1) + 1),
                     Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
                     STATUS_POSTED
@@ -64,12 +64,12 @@ public with sharing class DagSourceFileGeneratorController {
     public void changeStatus() {
 
         this.availableBalance = this.startBalance;
-        this.currentBalance   = this.startBalance;
+        this.currentBalance = this.startBalance;
 
         for (TransactionWrapper field : transactionList) {
             if (field.transStatus == STATUS_POSTED) {
                 this.availableBalance = this.availableBalance - field.amount;
-                this.currentBalance   = this.currentBalance   - field.amount;
+                this.currentBalance = this.currentBalance - field.amount;
             } else {
                 this.availableBalance = this.availableBalance - field.amount;
             }
@@ -108,7 +108,7 @@ public with sharing class DagSourceFileGeneratorController {
     public List<SelectOption> getStatus() {
         List<SelectOption> options = new List<SelectOption>();
         options.add(new SelectOption('pending', 'PENDING'));
-        options.add(new SelectOption('posted',  'POSTED'));
+        options.add(new SelectOption('posted', 'POSTED'));
         return options;
     }
     

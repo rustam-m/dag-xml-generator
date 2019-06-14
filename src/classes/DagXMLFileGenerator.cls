@@ -1,18 +1,18 @@
 public with sharing class DagXMLFileGenerator {
 
-    private static String BANK_STUB        = 'Bank';
+    private static String BANK_STUB = 'Bank';
     private static String CREDIT_CARD_STUB = 'Credits';
 
     private List<TransactionWrapper> transactions;
-    private  String  accountName;
-    private  Decimal availableBalance;
-    private  Decimal currentBalance;
+    private String accountName;
+    private Decimal availableBalance;
+    private Decimal currentBalance;
 
     public DagXMLFileGenerator(List<TransactionWrapper> sourceTransactions, String accName, Decimal aBalance, Decimal cBalance) {
-        this.transactions     = sourceTransactions;
-        this.accountName      = accName;
+        this.transactions = sourceTransactions;
+        this.accountName = accName;
         this.availableBalance = aBalance;
-        this.currentBalance   = cBalance;
+        this.currentBalance = cBalance;
     }
 
     public DagXMLFileGenerator(List<TransactionWrapper> sourceTransactions) {

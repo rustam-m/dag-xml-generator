@@ -8,7 +8,13 @@ public with sharing class XmlCreatorTestData {
         'ACH Electronic Debit',
         'Cash Withdrawal',
         'Interest Payment',
-        'Transfer'
+        'Reebok 122',
+        'Nike Inc.',
+        'Transfer',
+        'Wings of sky INC.',
+        'Yellow Island 21',
+        'WIN 2000 INC.',
+        'Reengo XXI'
     };
 
     public static final List<String> DESCRIPTION_CREDIT_CARD = new List<String> {
@@ -24,7 +30,12 @@ public with sharing class XmlCreatorTestData {
         'LOWE\'S OF HURST',
         'PANERA BREAD',
         'FARMERS INS',
-        'PAYPAL'
+        'PAYPAL',
+        'ORACLE CA',
+        'NETFLIX NY',
+        'FLOWER 20X',
+        'ROOM 24H',
+        'DREAM INS'
     };
 
     public  static final List<String> DESCRIPTION_OFX =  new List<String> {
@@ -33,6 +44,7 @@ public with sharing class XmlCreatorTestData {
         'John Hancock',
         'Tesco',
         'ADIDAS',
+        'Apple',
         'Columbia',
         'Cinemax',
         'Amazon',

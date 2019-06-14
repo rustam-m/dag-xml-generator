@@ -4,7 +4,7 @@ public with sharing class OfxFileGenerator {
     private String transCurrency;
 
     public OfxFileGenerator(List<TransactionWrapper> sourceTransactions, String tCurrency) {
-        this.transactions  = sourceTransactions;
+        this.transactions = sourceTransactions;
         this.transCurrency = tCurrency;
     }
 
@@ -13,7 +13,7 @@ public with sharing class OfxFileGenerator {
     }
 
     private String createFile(String data) {
-        String fileName = 'Ofx_example';
+        String fileName = 'OFX_Example_'+ this.transCurrency;
         List<ContentVersion> doc = [SELECT Title FROM ContentVersion WHERE Title = :fileName LIMIT 1];
 
         if (doc.isEmpty()) {
@@ -41,16 +41,16 @@ public with sharing class OfxFileGenerator {
         for (TransactionWrapper ofxField : this.transactions) {
 
             Decimal amountTransaction  = TransactionWrapper.TransactionTypeOFX.PAYMENT.name() != ofxField.transBaseType
-                    ? ofxField.amount
-                    : ofxField.amount - (ofxField.amount * 2);
+                ? ofxField.amount
+                : ofxField.amount - (ofxField.amount * 2);
 
             ofxTransactionList.add(
                 '<STMTTRN>' +
-                    '<TRNTYPE>'  + ofxField.transBaseType +
+                    '<TRNTYPE>' + ofxField.transBaseType +
                     '<DTPOSTED>' + String.valueOf(ofxField.postDate).replace('-', '') +
-                    '<TRNAMT>'   + amountTransaction +
-                    '<FITID>'    + Math.abs(Crypto.getRandomInteger()) +
-                    '<NAME>'     + ofxField.description +
+                    '<TRNAMT>' + amountTransaction +
+                    '<FITID>' + Math.abs(Crypto.getRandomInteger()) +
+                    '<NAME>' + ofxField.description +
                 '</STMTTRN>'
             );
         }
@@ -58,7 +58,7 @@ public with sharing class OfxFileGenerator {
         String ofxData = 'DATA:OFXSGML3' +
                 '<OFX>'+
                  '<CURDEF>' + this.transCurrency +
-                     + String.join(ofxTransactionList,'') +
+                 + String.join(ofxTransactionList, '') +
                  '</OFX>';
 
         return createFile(ofxData);

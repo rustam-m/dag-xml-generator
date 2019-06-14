@@ -1,15 +1,15 @@
 public with sharing class OfxSourceFileGeneratorController {
 
-    public Date startDate                           { get; set; }
-    public Integer step                             { get; set; }
-    public Integer numberOfTransactions             { get; set; }
-    public String transCurrency                     { get; set; }
+    public Date startDate { get; set; }
+    public Integer step { get; set; }
+    public Integer numberOfTransactions { get; set; }
+    public String transCurrency { get; set; }
     public List<TransactionWrapper> transactionList { get; set; }
-    public String linkToFile                        { get; set; }
+    public String linkToFile { get; set; }
 
     public OfxSourceFileGeneratorController() {
         this.startDate = System.today();
-        this.step      = 1;
+        this.step = 1;
         this.numberOfTransactions = 1;
     }
 
@@ -17,11 +17,11 @@ public with sharing class OfxSourceFileGeneratorController {
         try {
             transactionList = new List<TransactionWrapper>();
 
-            Integer inc = 0;
+            Integer incrementForDate = 0;
             for (Integer i = 0; i < numberOfTransactions; i++) {
                 transactionList.add(new TransactionWrapper(
                     getDescription(),
-                    startDate.addDays(inc += step),
+                    startDate.addDays(incrementForDate += step),
                     Math.round(Math.random() * (1000 - 1) + 1),
                     Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionTypeOFX.PAYMENT : TransactionWrapper.TransactionTypeOFX.CREDIT
                 ));
@@ -30,9 +30,8 @@ public with sharing class OfxSourceFileGeneratorController {
         } catch (Exception e) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, String.valueOf(e)));
         }
-        return NULL;
+        return null;
     }
-
 
     public void generateOFX() {
         linkToFile = new OfxFileGenerator(transactionList, transCurrency).generateAndSave();
