@@ -24,10 +24,21 @@
                                              required="true">
                                 <apex:selectOptions value="{!transactionCurrency}"/>
                             </apex:selectList>
-                            <apex:input value="{!startDate}" type="date" label="Start Date" required="true"/>
-                            <apex:input value="{!step}" type="number" label="Step" required="true"/>
-                            <apex:input value="{!numberOfTransactions}" type="number" label="Number of Transactions"
+                            <apex:input value="{!startDate}" type="datetime-local" label="Start Date" required="true"/>
+                            <apex:input value="{!step}" type="number" label="Time span between transactions (in hours)" required="true"/>
+                            <apex:input value="{!numberOfTransactions}"
+                                        type="number"
+                                        label="Number of Transactions"
                                         required="true"/>
+                            <apex:input value="{!bankId}" type="text" size="9" html-maxlength="9" label="Financial Institution Id" required="true"/>
+                            <apex:input value="{!accountId}" type="text" size="16" html-maxlength="16" label="Financial Institution Account Id" required="true"/>
+                            <apex:selectList value="{!accountType}"
+                                             multiselect="false"
+                                             size="1"
+                                             label="Account Type (Container)"
+                                             required="true">
+                                <apex:selectOptions value="{!accountTypes}"/>
+                            </apex:selectList>
 
                             <apex:commandButton value="Generate Transaction(s)"
                                                 reRender="rerenderRightColumn"
@@ -56,15 +67,14 @@
                         <apex:pageBlockSection columns="1" collapsible="false"
                                                rendered="{!IF(transactionList == null, false, true)}">
 
-                            <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}"> Link to
-                                file
+                            <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}">
+                                Link to file
                             </apex:outputLink>
 
                             <apex:commandButton value="Create OFX file"
                                                 action="{!generateOFX}"
                                                 reRender="rerenderRightColumn"
-                                                status="pageStatus"
-                            />
+                                                status="pageStatus"/>
 
                             <apex:pageBlockSection columns="1" collapsible="false" id="balanceSection">
                             </apex:pageBlockSection>
@@ -78,7 +88,7 @@
                                     <apex:pageBlockSection columns="1" collapsible="false">
                                         <apex:input value="{!field.description}" type="text" label="Name"
                                                     required="true"/>
-                                        <apex:input value="{!field.postDate}" type="date" label="Post Date"
+                                        <apex:input value="{!field.postDate}" type="datetime-local" label="Post Date"
                                                     required="true"/>
                                     </apex:pageBlockSection>
 
@@ -102,11 +112,10 @@
                                 <apex:commandButton value="Create OFX file"
                                                     action="{!generateOFX}"
                                                     reRender="rerenderRightColumn"
-                                                    status="pageStatus"
-                                />
+                                                    status="pageStatus"/>
 
-                                <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}"> Link to
-                                    file
+                                <apex:outputLink value="{!linkToFile}" rendered="{!NOT(ISBLANK(linkToFile))}">
+                                    Link to file
                                 </apex:outputLink>
                             </apex:pageBlockSection>
                         </apex:pageBlockSection>

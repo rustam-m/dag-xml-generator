@@ -1,19 +1,25 @@
 public with sharing class OfxFileGenerator {
 
+    private String bankId;
+    private String accountId;
+    private String accountType;
     private List<TransactionWrapper> transactions;
     private String transCurrency;
 
-    public OfxFileGenerator(List<TransactionWrapper> sourceTransactions, String tCurrency) {
-        this.transactions = sourceTransactions;
+    public OfxFileGenerator(String bankId, String accountId, String accountType, String tCurrency, List<TransactionWrapper> sourceTransactions) {
+        this.bankId = bankId;
+        this.accountId = accountId;
+        this.accountType = accountType;
         this.transCurrency = tCurrency;
+        this.transactions = sourceTransactions;
     }
 
-    public String generateAndSave(){
+    public String generateAndSave() {
         return this.ofxTemplate();
     }
 
     private String createFile(String data) {
-        String fileName = 'OFX_Example_'+ this.transCurrency;
+        String fileName = 'OFX_Example_' + this.transCurrency + '_bankId_' + bankId + '_accountId_' + accountId;
         List<ContentVersion> doc = [SELECT Title FROM ContentVersion WHERE Title = :fileName LIMIT 1];
 
         if (doc.isEmpty()) {
@@ -45,21 +51,41 @@ public with sharing class OfxFileGenerator {
                 : ofxField.amount - (ofxField.amount * 2);
 
             ofxTransactionList.add(
-                '<STMTTRN>' +
-                    '<TRNTYPE>' + ofxField.transBaseType +
-                    '<DTPOSTED>' + String.valueOf(ofxField.postDate).replace('-', '') +
-                    '<TRNAMT>' + amountTransaction +
-                    '<FITID>' + Math.abs(Crypto.getRandomInteger()) +
-                    '<NAME>' + ofxField.description +
-                '</STMTTRN>'
+                '<STMTTRN>\n' +
+                    '<TRNTYPE>' + ofxField.transBaseType  + '\n' +
+                    '<DTPOSTED>' + String.valueOf(ofxField.postDate).replace('-', '')  + '\n' +
+                    '<TRNAMT>' + amountTransaction  + '\n' +
+                    '<FITID>' + Math.abs(Crypto.getRandomInteger())  + '\n' +
+                    '<NAME>' + ofxField.description  + '\n' +
+                '</STMTTRN>\n'
             );
         }
 
-        String ofxData = 'DATA:OFXSGML3' +
-                '<OFX>'+
-                 '<CURDEF>' + this.transCurrency +
-                 + String.join(ofxTransactionList, '') +
-                 '</OFX>';
+        String ofxData =
+            'OFXHEADER:100\n' +
+            'DATA:OFXSGML\n' +
+            'VERSION:102\n' +
+            'SECURITY:NONE\n' +
+            'ENCODING:USASCII\n' +
+            'CHARSET:1252\n' +
+            'COMPRESSION:NONE\n' +
+            'OLDFILEUID:NONE\n' +
+            'NEWFILEUID:NONE\n' +
+
+            '<OFX>\n'+
+            '<STMTTRNRS>\n' +
+            '<STMTRS>\n' +
+            '<CURDEF>' + this.transCurrency + '\n' +
+            '<BANKACCTFROM>\n' +
+            '<BANKID>' + this.bankId + '\n' +
+            '<ACCTID>' + this.accountId + '\n' +
+            '<ACCTTYPE>' + this.accountType + '\n' +
+            '</BANKACCTFROM>\n' +
+                String.join(ofxTransactionList, '') +
+            '</STMTRS>\n' +
+            '</STMTTRNRS>\n' +
+
+            '</OFX>';
 
         return createFile(ofxData);
     }
