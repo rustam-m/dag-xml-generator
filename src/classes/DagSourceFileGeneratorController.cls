@@ -1,7 +1,7 @@
 public with sharing class DagSourceFileGeneratorController {
 
     public String transactionType { get; set; }
-    public Date startDate { get; set; }
+    public DateTime startDate { get; set; }
     public Integer step { get; set; }
     public String accountName { get; set; }
     public Integer numberOfTransactions { get; set; }
@@ -15,7 +15,7 @@ public with sharing class DagSourceFileGeneratorController {
 
     //Constructor set default value;
     public DagSourceFileGeneratorController(){
-        this.startDate = Date.today();
+        this.startDate = System.now().addDays(-60);
         this.step = 1;
         this.numberOfTransactions = 1;
         this.startBalance = 10000;
@@ -33,19 +33,21 @@ public with sharing class DagSourceFileGeneratorController {
 
             transactionList = new List<TransactionWrapper>();
 
-            Integer incrementForDate = 0;
+            Integer extraHours = 0;
             Decimal maxNumber = (startBalance / numberOfTransactions) + 1;
             for (Integer i = 0; i < numberOfTransactions; i++) {
-                transactionList.add(new TransactionWrapper(
-                    getDescription(),
-                    startDate.addDays(incrementForDate + step),
-                    startDate.addDays(incrementForDate + 1),
-                    Math.round(Math.random() * (maxNumber - 1) + 1),
-                    Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
-                    STATUS_POSTED
-                )
-                );
 
+                transactionList.add(
+                    new TransactionWrapper(
+                        getDescription(),
+                        getTransactionDate(extraHours),
+                        getPostedDate(extraHours),
+                        Math.round(Math.random() * (maxNumber - 1) + 1),
+                        Math.round(Math.random() * 1) == 0 ? TransactionWrapper.TransactionType.DEBIT : TransactionWrapper.TransactionType.CREDIT,
+                        STATUS_POSTED
+                    )
+                );
+                extraHours = extraHours + step;
             }
 
             changeStatus();
@@ -54,6 +56,22 @@ public with sharing class DagSourceFileGeneratorController {
         }
 
         return null;
+    }
+
+    private Datetime getTransactionDate(Integer extraHours) {
+        Datetime result = startDate.addHours(extraHours);
+        if (result > System.now()) {
+            result = System.now();
+        }
+        return result;
+    }
+
+    private Datetime getPostedDate(Integer extraHours) {
+        Datetime result = startDate.addHours(extraHours).addMinutes(30);
+        if (result > System.now()) {
+            result = System.now();
+        }
+        return result;
     }
 
     public void generateXML() {
@@ -112,10 +130,10 @@ public with sharing class DagSourceFileGeneratorController {
         return options;
     }
     
-    private String dataValidation(Integer numberTransaction, Date startDate) {
+    private String dataValidation(Integer numberTransaction, Datetime startDate) {
         if (numberTransaction >= 1000 || numberTransaction < 1) {
             return 'Number of transactions can be any number from 1 to 999';
-        } else if (startDate > Date.today()) {
+        } else if (startDate > System.now()) {
             return 'The due date can not be earlier then the issue date';
         }
 

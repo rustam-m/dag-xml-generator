@@ -1,8 +1,8 @@
 public with sharing class TransactionWrapper {
 
     public String description { get; set; }
-    public Date transDate { get; set; }
-    public Date postDate { get; set; }
+    public Datetime transDate { get; set; }
+    public Datetime postDate { get; set; }
     public Decimal amount { get; set; }
     public String transStatus { get; set; }
     public Integer numberTransaction { get; set; }
@@ -20,7 +20,7 @@ public with sharing class TransactionWrapper {
     private static Integer count = 0;
 
     //    Constructor for XML file;
-    public TransactionWrapper(String descr, Date transDate, Date postDate, Decimal amount, TransactionType type, String status) {
+    public TransactionWrapper(String descr, Datetime transDate, Datetime postDate, Decimal amount, TransactionType type, String status) {
         this.description = descr;
         this.transDate = transDate;
         this.postDate = postDate;
@@ -32,7 +32,7 @@ public with sharing class TransactionWrapper {
     }
 
     //    Constructor for OFX file;
-    public TransactionWrapper(String descr, Date postDate, Decimal amount, TransactionTypeOFX type) {
+    public TransactionWrapper(String descr, Datetime postDate, Decimal amount, TransactionTypeOFX type) {
         this.description = descr;
         this.postDate = postDate;
         this.amount = amount.setScale(2);

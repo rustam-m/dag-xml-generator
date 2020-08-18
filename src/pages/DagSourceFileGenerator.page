@@ -4,7 +4,7 @@
     <style>
     .tertiaryPalette {
         background: #197fcc !important;
-        padding-left:5px !important;
+        padding-left: 5px !important;
         border-radius: 5px 5px 0 0;
     }
     </style>
@@ -25,11 +25,11 @@
                                 <apex:selectOptions value="{!items}"/>
                             </apex:selectList>
 
-                            <apex:input value="{!startBalance}"         type="number" label="Start Balance"          required="true"/>
-                            <apex:input value="{!startDate}"            type="date"   label="Start Date"             required="true"/>
-                            <apex:input value="{!step}"                 type="number" label="Step"                   required="true"/>
+                            <apex:input value="{!startBalance}" type="number" label="Start Balance" required="true"/>
+                            <apex:input value="{!startDate}" type="datetime-local" label="Start Date" required="true"/>
+                            <apex:input value="{!step}" type="number" label="Time span between transactions (in hours)" required="true"/>
                             <apex:input value="{!numberOfTransactions}" type="number" label="Number of Transactions" required="true"/>
-                            <apex:input value="{!accountName}"          type="text"   label="Account Name"           required="true"/>
+                            <apex:input value="{!accountName}" type="text" label="Account Name" required="true"/>
 
                             <apex:commandButton value="Generate Transaction(s)"
                                                 reRender="rerenderRightColumn"
@@ -67,22 +67,26 @@
                                                 disabled="{!OR(availableBalance < 0, currentBalance < 0)}"/>
 
                             <apex:pageBlockSection columns="1" collapsible="false" id="balanceSection">
-                                <apex:outputText value="{!transactionType}"   label="Type of XML file"/>
-                                <apex:outputText value="{!startBalance}"     label="Start Balance"/>
-                                <apex:outputText value="{!availableBalance}" style="font-weight:bold; color: {!IF(availableBalance < 0, 'red', 'green')}" label="Available Balance"/>
-                                <apex:outputText value="{!currentBalance}"   style="font-weight:bold; color: {!IF(currentBalance < 0, 'red', 'green')}" label="Current Balance"/>
+                                <apex:outputText value="{!transactionType}" label="Type of XML file"/>
+                                <apex:outputText value="{!startBalance}" label="Start Balance"/>
+                                <apex:outputText value="{!availableBalance}"
+                                                 style="font-weight:bold;
+                                                 color: {!IF(availableBalance < 0, 'red', 'green')}"
+                                                 label="Available Balance"/>
+                                <apex:outputText value="{!currentBalance}"
+                                                 style="font-weight:bold;
+                                                 color: {!IF(currentBalance < 0, 'red', 'green')}"
+                                                 label="Current Balance"/>
                             </apex:pageBlockSection>
-
-
 
                             <apex:repeat value="{!transactionList}" var="field">
 
                                 <apex:pageBlockSection title="Transaction {!field.numberTransaction}" columns="2" collapsible="false">
                                     <!--LEFT COLUMN-->
                                     <apex:pageBlockSection columns="1" collapsible="false">
-                                        <apex:input value="{!field.description}" type="text" label="Description"      required="true"/>
-                                        <apex:input value="{!field.transDate}"   type="date" label="Transaction Date" required="true"/>
-                                        <apex:input value="{!field.postDate}"    type="date" label="Post Date"        required="true"
+                                        <apex:input value="{!field.description}" type="text" label="Description" required="true"/>
+                                        <apex:input value="{!field.transDate}" type="datetime-local" label="Transaction Date" required="true"/>
+                                        <apex:input value="{!field.postDate}" type="datetime-local" label="Post Date" required="true"
                                                     rendered="{!IF(field.transStatus == 'pending', false, true)}"/>
                                     </apex:pageBlockSection>
 
@@ -100,7 +104,6 @@
                                         <!--base type-->
                                         <apex:selectList value="{!field.transBaseType}" multiselect="false" size="1" label="Base Type"   required="true">
                                             <apex:selectOptions value="{!baseType}"/>
-                                            <!--<apex:actionSupport event="onchange" reRender="transactionSection" status="changeStatus"/>-->
                                         </apex:selectList>
                                     </apex:pageBlockSection>
 
