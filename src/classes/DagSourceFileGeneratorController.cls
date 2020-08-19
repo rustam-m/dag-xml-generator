@@ -10,6 +10,7 @@ public with sharing class DagSourceFileGeneratorController {
     public Decimal startBalance { get; set; }
     public Decimal availableBalance { get; set; }
     public Decimal currentBalance { get; set; }
+    public Boolean isChromeBasedBrowser { get; set; }
 
     private static final String STATUS_POSTED = 'posted';
 
@@ -20,6 +21,7 @@ public with sharing class DagSourceFileGeneratorController {
         this.numberOfTransactions = 1;
         this.startBalance = 10000;
         this.currentBalance = this.startBalance;
+        this.isChromeBasedBrowser = ApexPages.currentPage().getHeaders().get('USER-AGENT').containsIgnoreCase('Chrome');
     }
 
     public PageReference createTransactions() {

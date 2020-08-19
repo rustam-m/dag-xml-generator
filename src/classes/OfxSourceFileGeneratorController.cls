@@ -9,6 +9,7 @@ public with sharing class OfxSourceFileGeneratorController {
     public String bankId { get; set; }
     public String accountId { get; set; }
     public String accountType { get; set; }
+    public Boolean isChromeBasedBrowser { get; set; }
 
     public OfxSourceFileGeneratorController() {
         this.startDate = System.now().addDays(-60);
@@ -17,6 +18,7 @@ public with sharing class OfxSourceFileGeneratorController {
         this.bankId = '123456789';
         this.accountId = 'XXXXXXXXXXXX7019';
         this.accountType = 'CREDITLINE';
+        this.isChromeBasedBrowser = ApexPages.currentPage().getHeaders().get('USER-AGENT').containsIgnoreCase('Chrome');
     }
 
     public PageReference createTransactions() {

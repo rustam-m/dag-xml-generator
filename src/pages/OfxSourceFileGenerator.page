@@ -10,6 +10,9 @@
     </style>
 
     <apex:pageBlock >
+        <apex:pageMessage summary="Your web browser is not fully compatible for this tool. Please use Chrome browser instead."
+                          severity="warning" strength="3" rendered="{!NOT(isChromeBasedBrowser)}"/>
+        <apex:pageMessages />
         <div class="slds-grid">
             <!--LEFT SIDEBAR-->
             <div class="slds-col slds-size--1-of-2">
