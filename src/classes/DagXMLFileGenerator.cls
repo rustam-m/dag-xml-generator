@@ -114,7 +114,7 @@ public with sharing class DagXMLFileGenerator {
             cardTransactionList.add(
                 '<transaction transactionStatus="'+ items.transStatus +'" baseType="'+ items.transBaseType +'">' +
                      '<description>' + items.description + '</description>' +
-                     '<transactionId>' + Math.abs(Crypto.getRandomInteger()) + '</transactionId>' +
+                     '<transactionId>' + getRandomTransactionId() + '</transactionId>' +
                      '<transDate localFormat="yyyy-MM-dd">' + postDateTime.format('yyyy-MM-dd\'T\'hh:mm:ss') + '</transDate>' +
                      showPostDate +
                      '<amount curCode="USD">' + items.amount + '</amount>' +
@@ -155,5 +155,19 @@ public with sharing class DagXMLFileGenerator {
         '</site>';
 
         return createFile(resXml, type);
+    }
+
+    private String getRandomTransactionId() {
+        String result;
+        Long randomValue = Math.abs(Crypto.getRandomLong());
+        result = String.valueOf(randomValue);
+        if (result.length() < 18) {
+            Long randomValue2 = Math.abs(Crypto.getRandomLong());
+            result = (result + String.valueOf(randomValue2)).left(18);
+        }
+        else if (result.length() > 18) {
+            result = result.left(18);
+        }
+        return result;
     }
 }
