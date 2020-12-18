@@ -19,7 +19,6 @@
                 <apex:form >
                     <apex:pageBlock title="Settings">
                         <apex:pageBlockSection columns="1" collapsible="false">
-
                             <apex:selectList value="{!transCurrency}"
                                              multiselect="false"
                                              size="1"
@@ -33,22 +32,33 @@
                                         type="number"
                                         label="Number of Transactions"
                                         required="true"/>
-                            <apex:input value="{!bankId}" type="text" size="9" html-maxlength="9" label="Financial Institution Id" required="true"/>
-                            <apex:input value="{!accountId}" type="text" size="16" html-maxlength="16" label="Financial Institution Account Id" required="true"/>
+                            <apex:input value="{!financialInstitutionName}" type="text" label="Financial Institution Name" required="true"/>
+                            <apex:input value="{!financialInstitutionId}" type="text" label="Financial Institution Id" required="true"/>
+                            <apex:selectList value="{!aggregateTypeValue}"
+                                             multiSelect="false"
+                                             size="1"
+                                             label="Source"
+                                             required="true">
+                                <apex:selectOptions value="{!aggregateType}"/>
+                                <apex:actionSupport event="onchange" reRender="acct-from"/>
+                            </apex:selectList>
+                        </apex:pageBlockSection>
+                        <apex:pageBlockSection id="acct-from" columns="1" collapsible="false" >
+                            <apex:input value="{!accountId}" type="text" label="Account Id" required="true"/>
                             <apex:selectList value="{!accountType}"
                                              multiselect="false"
                                              size="1"
                                              label="Account Type (Container)"
+                                             disabled="{!NOT(isBank)}"
                                              required="true">
                                 <apex:selectOptions value="{!accountTypes}"/>
                             </apex:selectList>
-
-                            <apex:commandButton value="Generate Transaction(s)"
-                                                reRender="rerenderRightColumn"
-                                                action="{!createTransactions}"
-                                                status="pageStatus"/>
                         </apex:pageBlockSection>
 
+                        <apex:commandButton value="Generate Transaction(s)"
+                                            reRender="rerenderRightColumn"
+                                            action="{!createTransactions}"
+                                            status="pageStatus"/>
                     </apex:pageBlock>
                 </apex:form>
             </div>

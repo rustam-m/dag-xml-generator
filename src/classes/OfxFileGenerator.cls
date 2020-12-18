@@ -1,13 +1,17 @@
 public with sharing class OfxFileGenerator {
 
-    private String bankId;
+    private String financialInstitutionId;
+    private String financialInstitutionName;
+    private Boolean isBank;
     private String accountId;
     private String accountType;
     private List<TransactionWrapper> transactions;
     private String transCurrency;
 
-    public OfxFileGenerator(String bankId, String accountId, String accountType, String tCurrency, List<TransactionWrapper> sourceTransactions) {
-        this.bankId = bankId;
+    public OfxFileGenerator(String fid, String fiName, Boolean isBank, String accountId, String accountType, String tCurrency, List<TransactionWrapper> sourceTransactions) {
+        this.financialInstitutionId = fid;
+        this.financialInstitutionName = fiName;
+        this.isBank = isBank;
         this.accountId = accountId;
         this.accountType = accountType;
         this.transCurrency = tCurrency;
@@ -19,15 +23,19 @@ public with sharing class OfxFileGenerator {
     }
 
     private String createFile(String data) {
-        String fileName = 'OFX_Example_' + this.transCurrency + '_bankId_' + bankId + '_accountId_' + accountId;
+        String fileName = 'OFX_Example_' +
+            this.transCurrency +
+            '_ORG_' + financialInstitutionName +
+            '_FID_' + financialInstitutionId +
+            '_accountId_' + accountId;
         List<ContentVersion> doc = [SELECT Title FROM ContentVersion WHERE Title = :fileName LIMIT 1];
 
         if (doc.isEmpty()) {
             doc.add(new ContentVersion (
-                    Title          = fileName,
-                    PathOnClient   = fileName + '.ofx',
-                    VersionData    = Blob.valueOf(data),
-                    IsMajorVersion = false
+                Title          = fileName,
+                PathOnClient   = fileName + '.ofx',
+                VersionData    = Blob.valueOf(data),
+                IsMajorVersion = false
             ));
         } else {
             doc.get(0).VersionData = Blob.valueOf(data);
@@ -61,31 +69,38 @@ public with sharing class OfxFileGenerator {
             );
         }
 
+        String acctFrom = '';
+        if (isBank) {
+            acctFrom =
+                '<BANKACCTFROM>\n' +
+                    '<ACCTID>' + this.accountId + '\n' +
+                    '<ACCTTYPE>' + this.accountType + '\n' +
+                '</BANKACCTFROM>';
+        }
+        else {
+            acctFrom =
+                '<CCACCTFROM>\n' +
+                    '<ACCTID>' + this.accountId + '\n' +
+                '</CCACCTFROM>';
+        }
+
         String ofxData =
-            'OFXHEADER:100\n' +
-            'DATA:OFXSGML\n' +
-            'VERSION:102\n' +
-            'SECURITY:NONE\n' +
-            'ENCODING:USASCII\n' +
-            'CHARSET:1252\n' +
-            'COMPRESSION:NONE\n' +
-            'OLDFILEUID:NONE\n' +
-            'NEWFILEUID:NONE\n' +
+            '<?xml version="1.0" encoding="utf-8" ?>\n' +
+                '<?OFX OFXHEADER="200" VERSION="202" SECURITY="NONE" OLDFILEUID="NONE" NEWFILEUID="NONE"?>\n' +
+                '<OFX>\n'+
+                '<FI>\n' +
+                '<ORG>' + financialInstitutionName + '</ORG>\n' +
+                '<FID>' + financialInstitutionId + '</FID>\n' +
+                '</FI>\n' +
+                '<STMTTRNRS>\n' +
+                '<STMTRS>\n' +
+                '<CURDEF>' + this.transCurrency + '\n' +
+                    acctFrom + '\n' +
+                    String.join(ofxTransactionList, '') +
+                '</STMTRS>\n' +
+                '</STMTTRNRS>\n' +
 
-            '<OFX>\n'+
-            '<STMTTRNRS>\n' +
-            '<STMTRS>\n' +
-            '<CURDEF>' + this.transCurrency + '\n' +
-            '<BANKACCTFROM>\n' +
-            '<BANKID>' + this.bankId + '\n' +
-            '<ACCTID>' + this.accountId + '\n' +
-            '<ACCTTYPE>' + this.accountType + '\n' +
-            '</BANKACCTFROM>\n' +
-                String.join(ofxTransactionList, '') +
-            '</STMTRS>\n' +
-            '</STMTTRNRS>\n' +
-
-            '</OFX>';
+                '</OFX>';
 
         return createFile(ofxData);
     }

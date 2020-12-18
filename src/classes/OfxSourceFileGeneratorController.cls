@@ -7,6 +7,9 @@ public with sharing class OfxSourceFileGeneratorController {
     public List<TransactionWrapper> transactionList { get; set; }
     public String linkToFile { get; set; }
     public String bankId { get; set; }
+    public String financialInstitutionId { get; set; }
+    public String financialInstitutionName { get; set; }
+    public String aggregateTypeValue { get; set; }
     public String accountId { get; set; }
     public String accountType { get; set; }
     public Boolean isChromeBasedBrowser { get; set; }
@@ -16,8 +19,11 @@ public with sharing class OfxSourceFileGeneratorController {
         this.step = 1;
         this.numberOfTransactions = 1;
         this.bankId = '123456789';
-        this.accountId = 'XXXXXXXXXXXX7019';
+        this.accountId = '7019';
         this.accountType = 'CREDITLINE';
+        this.financialInstitutionName = 'My Bank';
+        this.financialInstitutionId = '9991';
+        this.aggregateTypeValue = 'Banking Account';
         this.isChromeBasedBrowser = ApexPages.currentPage().getHeaders().get('USER-AGENT').containsIgnoreCase('Chrome');
     }
 
@@ -52,7 +58,9 @@ public with sharing class OfxSourceFileGeneratorController {
 
     public void generateOFX() {
         linkToFile = new OfxFileGenerator(
-            bankId,
+            financialInstitutionId,
+            financialInstitutionName,
+            getIsBank(),
             accountId,
             accountType,
             transCurrency,
@@ -81,11 +89,28 @@ public with sharing class OfxSourceFileGeneratorController {
 
     public List<SelectOption> getAccountTypes() {
         List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('CHECKING', 'Checking'));
-        options.add(new SelectOption('SAVINGS', 'Savings'));
-        options.add(new SelectOption('MONEYMRKT', 'Money Market'));
-        options.add(new SelectOption('CREDITLINE', 'Line of credit'));
+        if (getIsBank()) {
+            options.add(new SelectOption('CHECKING', 'Checking'));
+            options.add(new SelectOption('SAVINGS', 'Savings'));
+            options.add(new SelectOption('MONEYMRKT', 'Money Market'));
+            options.add(new SelectOption('CREDITLINE', 'Line of credit'));
+        }
+        else {
+            options.add(new SelectOption('creditCard', 'Credit Card'));
+        }
+
         return options;
+    }
+
+    public List<SelectOption> getAggregateType() {
+        List<SelectOption> options = new List<SelectOption>();
+        options.add(new SelectOption('Banking Account', 'Banking Account'));
+        options.add(new SelectOption('Credit Card Account', 'Credit Card Account'));
+        return options;
+    }
+
+    public Boolean getIsBank() {
+        return aggregateTypeValue == 'Banking Account';
     }
 
     private String getDescription() {
